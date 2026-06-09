@@ -1,0 +1,361 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .app-wrapper { display: flex; gap: 12px; padding: 12px; align-items: flex-start; overflow-x: auto; }
+  .phone-frame {
+    width: 320px; min-width: 320px;
+    border-radius: 32px;
+    background: #f5f3ee;
+    border: 1.5px solid #ccc;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    font-size: 13px;
+    font-family: var(--font-sans);
+  }
+  .status-bar { background: #1f3022; color: #fff; display: flex; justify-content: space-between; padding: 8px 16px 6px; font-size: 11px; }
+  .topbar { background: #1f3022; display: flex; justify-content: space-between; align-items: center; padding: 8px 16px 12px; }
+  .logo { color: #c8a84b; font-size: 15px; font-weight: 500; }
+  .logo span { color: #fff; }
+  .topbar-icon { position: relative; color: #fff; font-size: 20px; }
+  .badge { position: absolute; top: -6px; right: -6px; background: #c8a84b; color: #1f3022; border-radius: 50%; width: 16px; height: 16px; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .page-content { flex: 1; overflow-y: auto; background: #f5f3ee; }
+  .bottom-nav { background: #fff; border-top: 0.5px solid #ddd; display: flex; justify-content: space-around; padding: 8px 0 10px; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; color: #888; }
+  .nav-item.active { color: #1f3022; }
+  .nav-item i { font-size: 20px; }
+  .page-label { text-align: center; font-size: 10px; color: #888; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; background: #f0ece0; }
+
+  /* Search */
+  .search-bar { margin: 10px 14px; background: #fff; border: 0.5px solid #ddd; border-radius: 20px; display: flex; align-items: center; gap: 6px; padding: 7px 12px; color: #aaa; font-size: 12px; }
+
+  /* Hero */
+  .hero-banner { margin: 0 14px 12px; background: #1f3022; border-radius: 14px; padding: 20px 16px 16px; position: relative; overflow: hidden; min-height: 110px; }
+  .hero-banner h2 { color: #fff; font-size: 18px; font-weight: 500; line-height: 1.3; }
+  .hero-banner p { color: #88aa88; font-size: 11px; margin: 4px 0 10px; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 4px; background: #c8a84b; color: #1f3022; border: none; border-radius: 20px; padding: 7px 14px; font-size: 11px; font-weight: 500; cursor: pointer; }
+  .hero-watch { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 85px; height: 85px; border-radius: 50%; overflow: hidden; border: 2px solid rgba(200,168,75,0.4); }
+  .hero-watch img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Section */
+  .section-title { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px 6px; font-weight: 500; font-size: 13px; color: #222; }
+  .see-all { color: #c8a84b; font-size: 11px; }
+
+  /* Categories */
+  .category-row { display: flex; gap: 8px; padding: 0 14px 10px; }
+  .cat-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 52px; }
+  .cat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: #e8e4d8; color: #555; }
+  .cat-icon.active { background: #1f3022; color: #fff; }
+  .cat-item span { font-size: 10px; color: #555; }
+
+  /* Product Grid */
+  .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 14px 14px; }
+  .product-card { background: #fff; border-radius: 12px; border: 0.5px solid #e0ddd4; overflow: hidden; }
+  .product-img { height: 95px; background: #e5e2d8; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .product-img img { width: 100%; height: 100%; object-fit: cover; }
+  .product-card-body { padding: 8px; }
+  .product-card-body p { font-size: 11px; color: #333; font-weight: 500; line-height: 1.3; }
+  .product-price { color: #1f3022; font-weight: 500; font-size: 12px; margin-top: 4px; }
+
+  /* Detail */
+  .detail-img { height: 210px; background: #e5e2d8; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+  .detail-img img { width: 100%; height: 100%; object-fit: cover; }
+  .tag-pill { display: inline-block; background: #c8a84b; color: #1f3022; font-size: 10px; padding: 3px 10px; border-radius: 12px; position: absolute; top: 12px; right: 12px; font-weight: 500; }
+  .detail-body { padding: 14px; }
+  .breadcrumb { font-size: 10px; color: #c8a84b; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .detail-title { font-size: 16px; font-weight: 500; color: #111; margin-bottom: 6px; }
+  .detail-price { font-size: 22px; font-weight: 500; color: #1f3022; margin-bottom: 8px; }
+  .stock-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #2a7a42; background: #d6f0de; border-radius: 20px; padding: 3px 10px; margin-bottom: 12px; }
+  .option-label { font-size: 10px; letter-spacing: 1px; color: #888; text-transform: uppercase; margin-bottom: 6px; margin-top: 10px; }
+  .option-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .option-chip { padding: 5px 14px; border-radius: 20px; border: 0.5px solid #ddd; font-size: 11px; background: #fff; color: #333; }
+  .option-chip.selected { background: #1f3022; color: #fff; border-color: #1f3022; }
+  .btn-add-cart { width: 100%; background: #1f3022; color: #fff; border: none; border-radius: 24px; padding: 12px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 14px; }
+
+  /* Cart */
+  .cart-header { padding: 12px 14px 6px; display: flex; justify-content: space-between; align-items: baseline; }
+  .cart-header h2 { font-size: 16px; font-weight: 500; }
+  .hapus-semua { color: #c0392b; font-size: 11px; }
+  .cart-item { display: flex; gap: 10px; align-items: flex-start; background: #fff; margin: 6px 14px; border-radius: 12px; padding: 10px; border: 0.5px solid #e0ddd4; }
+  .cart-item-img { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: #e5e2d8; }
+  .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+  .cart-item-info { flex: 1; }
+  .cart-item-info p { font-size: 12px; font-weight: 500; color: #222; }
+  .cart-item-info small { font-size: 10px; color: #888; }
+  .cart-item-price { font-size: 12px; font-weight: 500; color: #1f3022; margin-top: 4px; }
+  .qty-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .qty-btn { width: 22px; height: 22px; border-radius: 50%; border: 0.5px solid #ccc; background: #fff; color: #333; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .qty-val { font-size: 12px; font-weight: 500; }
+  .trash-icon { color: #e74c3c; font-size: 16px; }
+  .promo-row { display: flex; gap: 8px; padding: 8px 14px; }
+  .promo-input { flex: 1; border: 0.5px solid #ddd; border-radius: 20px; padding: 8px 14px; font-size: 12px; background: #fff; outline: none; }
+  .btn-pakai { background: #c8a84b; color: #fff; border: none; border-radius: 20px; padding: 8px 16px; font-size: 12px; font-weight: 500; }
+  .summary-box { margin: 4px 14px 14px; background: #fff; border-radius: 12px; border: 0.5px solid #e0ddd4; padding: 12px; }
+  .summary-box h3 { font-size: 13px; font-weight: 500; margin-bottom: 10px; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; color: #444; }
+  .summary-row.discount { color: #2a7a42; }
+  .summary-divider { border: none; border-top: 0.5px solid #e0ddd4; margin: 8px 0; }
+  .summary-total { display: flex; justify-content: space-between; font-size: 14px; font-weight: 500; color: #111; }
+  .btn-checkout { width: 100%; background: #1f3022; color: #fff; border: none; border-radius: 24px; padding: 12px; font-size: 13px; font-weight: 500; cursor: pointer; margin-top: 10px; }
+
+  /* Component Library */
+  .comp-lib { padding: 12px 14px; }
+  .comp-section { margin-bottom: 16px; }
+  .comp-section h3 { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-bottom: 8px; }
+  .comp-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn-default { padding: 7px 16px; border-radius: 20px; border: 0.5px solid #1f3022; background: #fff; color: #1f3022; font-size: 12px; }
+  .btn-hover-state { background: #eaf0ea; border: 0.5px solid #1f3022; }
+  .btn-disabled-state { background: #f0ede8; color: #bbb; border-color: #ddd; }
+  .comp-card { background: #fff; border-radius: 12px; border: 0.5px solid #e0ddd4; overflow: hidden; width: 120px; }
+  .comp-card-img { height: 68px; overflow: hidden; background: #e5e2d8; }
+  .comp-card-img img { width: 100%; height: 100%; object-fit: cover; }
+  .comp-card-body { padding: 8px; }
+  .comp-card-body p { font-size: 10px; color: #333; font-weight: 500; }
+  .comp-card-body small { font-size: 9px; color: #888; }
+  .comp-card-price { font-size: 11px; color: #1f3022; font-weight: 500; margin-top: 3px; }
+</style>
+
+<h2 class="sr-only">Desain aplikasi grin.store dengan foto produk nyata pada semua halaman</h2>
+
+<div style="background: #f0ece0; border-radius: 16px; padding: 12px;">
+  <div style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; align-items: flex-start;">
+
+    <!-- COMPONENT LIBRARY -->
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="page-label">Component Library</div>
+      <div class="phone-frame" style="min-height:580px;">
+        <div class="status-bar"><span>23:59</span><span>▲ 🔋</span></div>
+        <div class="topbar"><span class="logo">grin<span>.store</span></span><div class="topbar-icon"><i class="ti ti-shopping-bag" aria-hidden="true"></i></div></div>
+        <div class="page-content">
+          <div class="comp-lib">
+            <div class="comp-section">
+              <h3>Tombol — Variants</h3>
+              <div class="comp-row">
+                <button class="btn-default">Default</button>
+                <button class="btn-default btn-hover-state">Hover</button>
+                <button class="btn-default btn-disabled-state" disabled>Disabled</button>
+              </div>
+              <div class="comp-row" style="margin-top:8px;">
+                <button class="btn-primary"><i class="ti ti-plus" aria-hidden="true"></i> Tambah</button>
+                <button style="background:#1f3022;color:#fff;border:none;border-radius:20px;padding:7px 14px;font-size:11px;font-weight:500;">Checkout</button>
+              </div>
+            </div>
+            <div class="comp-section">
+              <h3>Kartu Produk</h3>
+              <div class="comp-row">
+                <div class="comp-card">
+                  <div class="comp-card-img"><img src="https://cdn.shopify.com/s/files/1/0562/3982/5983/files/lord-timepieces-classic-black-watch_grande.jpg" alt="Jam Tangan" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-size:24px;\'><i class=\'ti ti-watch\'></i></div>'"></div>
+                  <div class="comp-card-body"><p>Jam Klasik</p><small>Hitam / M</small><div class="comp-card-price">Rp 350.000</div></div>
+                </div>
+                <div class="comp-card">
+                  <div class="comp-card-img"><img src="https://www.pngmart.com/files/22/White-Running-Sport-Shoes-PNG-Photo.png" alt="Sepatu" style="background:#f0f0f0;" onerror="this.parentElement.innerHTML='<div style=\'display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-size:24px;\'><i class=\'ti ti-shoe\'></i></div>'"></div>
+                  <div class="comp-card-body"><p>Sepatu Sporty</p><small>Putih / 42</small><div class="comp-card-price">Rp 450.000</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="comp-section">
+              <h3>Bottom Navigation Bar</h3>
+              <div style="background:#fff;border-radius:12px;border:0.5px solid #e0ddd4;padding:10px 0;">
+                <div style="display:flex;justify-content:space-around;">
+                  <div class="nav-item active"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></div>
+                  <div class="nav-item"><i class="ti ti-search" aria-hidden="true"></i><span>Cari</span></div>
+                  <div class="nav-item"><i class="ti ti-heart" aria-hidden="true"></i><span>Favorit</span></div>
+                  <div class="nav-item"><i class="ti ti-user" aria-hidden="true"></i><span>Profil</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="comp-section">
+              <h3>Badge & Chip</h3>
+              <div class="comp-row">
+                <span class="stock-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#2a7a42;background:#d6f0de;border-radius:20px;padding:3px 10px;">● Tersedia</span>
+                <span style="background:#c8a84b;color:#1f3022;font-size:10px;padding:3px 10px;border-radius:12px;font-weight:500;">Terbaru</span>
+                <span class="option-chip selected">Hitam</span>
+                <span class="option-chip">Silver</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></div>
+          <div class="nav-item"><i class="ti ti-search" aria-hidden="true"></i><span>Cari</span></div>
+          <div class="nav-item"><i class="ti ti-heart" aria-hidden="true"></i><span>Favorit</span></div>
+          <div class="nav-item"><i class="ti ti-user" aria-hidden="true"></i><span>Profil</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="page-label">Home</div>
+      <div class="phone-frame" style="min-height:580px;">
+        <div class="status-bar"><span>23:59</span><span>▲ 🔋</span></div>
+        <div class="topbar"><span class="logo">grin<span>.store</span></span><div class="topbar-icon"><i class="ti ti-shopping-bag" aria-hidden="true"></i><span class="badge">3</span></div></div>
+        <div class="page-content">
+          <div class="search-bar"><i class="ti ti-search" style="font-size:14px;" aria-hidden="true"></i> Cari produk...</div>
+          <div class="hero-banner">
+            <h2>Koleksi<br>Terbaru 2026</h2>
+            <p>Temukan pilihan terbaik</p>
+            <button class="btn-primary">Belanja Sekarang →</button>
+            <div class="hero-watch">
+              <img src="https://cdn.shopify.com/s/files/1/0562/3982/5983/files/lord-timepieces-classic-black-watch_grande.jpg" alt="Jam Tangan Hero" onerror="this.style.display='none'">
+            </div>
+          </div>
+          <div class="section-title">Kategori</div>
+          <div class="category-row">
+            <div class="cat-item"><div class="cat-icon active"><i class="ti ti-layout-grid" aria-hidden="true"></i></div><span>Semua</span></div>
+            <div class="cat-item"><div class="cat-icon"><i class="ti ti-device-mobile" aria-hidden="true"></i></div><span>Elektronik</span></div>
+            <div class="cat-item"><div class="cat-icon"><i class="ti ti-hanger" aria-hidden="true"></i></div><span>Fashion</span></div>
+            <div class="cat-item"><div class="cat-icon"><i class="ti ti-home" aria-hidden="true"></i></div><span>Rumah</span></div>
+            <div class="cat-item"><div class="cat-icon"><i class="ti ti-briefcase" aria-hidden="true"></i></div><span>Tas</span></div>
+          </div>
+          <div class="section-title">Produk Populer <span class="see-all">Lihat Semua →</span></div>
+          <div class="product-grid">
+            <div class="product-card">
+              <div class="product-img"><img src="https://cdn.shopify.com/s/files/1/0562/3982/5983/files/lord-timepieces-classic-black-watch_grande.jpg" alt="Jam Tangan Klasik" onerror="this.parentElement.innerHTML='<i class=\'ti ti-watch\' style=\'font-size:32px;color:#bbb\'></i>'"></div>
+              <div class="product-card-body"><p>Jam Tangan Klasik Premium</p><div class="product-price">Rp 350.000</div></div>
+            </div>
+            <div class="product-card">
+              <div class="product-img" style="background:#f0f0f0;"><img src="https://www.pngmart.com/files/22/White-Running-Sport-Shoes-PNG-Photo.png" alt="Sepatu Lari" onerror="this.parentElement.innerHTML='<i class=\'ti ti-shoe\' style=\'font-size:32px;color:#bbb\'></i>'"></div>
+              <div class="product-card-body"><p>Sepatu Lari Sporty</p><div class="product-price">Rp 450.000</div></div>
+            </div>
+            <div class="product-card">
+              <div class="product-img" style="background:#1a1a2e;"><img src="https://images.unsplash.com/photo-1541643600914-78b084683702?w=200&h=200&fit=crop" alt="Parfum Elegan" onerror="this.parentElement.innerHTML='<i class=\'ti ti-bottle\' style=\'font-size:32px;color:#bbb\'></i>'"></div>
+              <div class="product-card-body"><p>Parfum Elegan</p><div class="product-price">Rp 220.000</div></div>
+            </div>
+            <div class="product-card">
+              <div class="product-img"><img src="https://gootium.com/cdn/shop/products/gootium21101BRN-2_1296x.jpg?v=1634805748" alt="Tas Ransel" onerror="this.parentElement.innerHTML='<i class=\'ti ti-backpack\' style=\'font-size:32px;color:#bbb\'></i>'"></div>
+              <div class="product-card-body"><p>Tas Ransel Canvas</p><div class="product-price">Rp 185.000</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></div>
+          <div class="nav-item"><i class="ti ti-search" aria-hidden="true"></i><span>Cari</span></div>
+          <div class="nav-item"><i class="ti ti-heart" aria-hidden="true"></i><span>Favorit</span></div>
+          <div class="nav-item"><i class="ti ti-user" aria-hidden="true"></i><span>Profil</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAIL -->
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="page-label">Detail</div>
+      <div class="phone-frame" style="min-height:580px;">
+        <div class="status-bar"><span>23:59</span><span>▲ 🔋</span></div>
+        <div class="topbar" style="padding-bottom:10px;">
+          <i class="ti ti-arrow-left" style="color:#fff;font-size:18px;" aria-hidden="true"></i>
+          <span class="logo">grin<span>.store</span></span>
+          <div class="topbar-icon"><i class="ti ti-shopping-bag" aria-hidden="true"></i><span class="badge">3</span></div>
+        </div>
+        <div class="page-content">
+          <div class="detail-img">
+            <img src="https://cdn.shopify.com/s/files/1/0562/3982/5983/files/lord-timepieces-classic-black-watch_grande.jpg" alt="Jam Tangan Klasik Premium" onerror="this.parentElement.innerHTML='<i class=\'ti ti-watch\' style=\'font-size:64px;color:#bbb\'></i>'">
+            <span class="tag-pill">Terbaru</span>
+          </div>
+          <div class="detail-body">
+            <div class="breadcrumb">ELEKTRONIK · AKSESORIS</div>
+            <p class="detail-title">Jam Tangan Klasik Premium</p>
+            <p class="detail-price">Rp 350.000</p>
+            <span class="stock-badge">● Stok: 10 tersedia</span>
+            <div class="option-label">Warna</div>
+            <div class="option-row">
+              <span class="option-chip selected">Hitam</span>
+              <span class="option-chip">Cokelat</span>
+              <span class="option-chip">Silver</span>
+            </div>
+            <div class="option-label">Ukuran Tali</div>
+            <div class="option-row">
+              <span class="option-chip selected">S</span>
+              <span class="option-chip">M</span>
+              <span class="option-chip">L</span>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="font-size:10px;letter-spacing:1px;color:#888;text-transform:uppercase;margin-bottom:4px;">Deskripsi</div>
+              <p style="font-size:11px;color:#555;line-height:1.6;">Jam tangan klasik dengan desain premium, material stainless steel tahan air. Cocok untuk aktivitas formal maupun kasual sehari-hari.</p>
+            </div>
+            <button class="btn-add-cart"><i class="ti ti-shopping-cart-plus" aria-hidden="true"></i> Tambah ke Keranjang</button>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></div>
+          <div class="nav-item"><i class="ti ti-search" aria-hidden="true"></i><span>Cari</span></div>
+          <div class="nav-item"><i class="ti ti-heart" aria-hidden="true"></i><span>Favorit</span></div>
+          <div class="nav-item"><i class="ti ti-user" aria-hidden="true"></i><span>Profil</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CART -->
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <div class="page-label">Cart</div>
+      <div class="phone-frame" style="min-height:580px;">
+        <div class="status-bar"><span>23:59</span><span>▲ 🔋</span></div>
+        <div class="topbar" style="padding-bottom:10px;">
+          <i class="ti ti-arrow-left" style="color:#fff;font-size:18px;" aria-hidden="true"></i>
+          <span class="logo">grin<span>.store</span></span>
+          <div class="topbar-icon"><i class="ti ti-shopping-bag" aria-hidden="true"></i><span class="badge">3</span></div>
+        </div>
+        <div class="page-content">
+          <div class="cart-header">
+            <div><h2>Keranjang Belanja</h2><small style="font-size:11px;color:#888;">3 produk dipilih</small></div>
+            <span class="hapus-semua">Hapus Semua</span>
+          </div>
+
+          <div class="cart-item">
+            <div class="cart-item-img"><img src="https://cdn.shopify.com/s/files/1/0562/3982/5983/files/lord-timepieces-classic-black-watch_grande.jpg" alt="Jam Tangan" onerror="this.parentElement.innerHTML='<i class=\'ti ti-watch\' style=\'font-size:22px;color:#bbb;margin:auto;display:flex;align-items:center;justify-content:center;height:100%;\'></i>'"></div>
+            <div class="cart-item-info">
+              <p>Jam Tangan Klasik Premium</p>
+              <small>Hitam / M</small>
+              <div class="cart-item-price">Rp 350.000</div>
+              <div class="qty-row"><span class="qty-btn">−</span><span class="qty-val">1</span><span class="qty-btn">+</span></div>
+            </div>
+            <i class="ti ti-trash trash-icon" aria-label="Hapus item"></i>
+          </div>
+
+          <div class="cart-item">
+            <div class="cart-item-img" style="background:#f0f0f0;"><img src="https://www.pngmart.com/files/22/White-Running-Sport-Shoes-PNG-Photo.png" alt="Sepatu" onerror="this.parentElement.innerHTML='<i class=\'ti ti-shoe\' style=\'font-size:22px;color:#bbb;\'></i>'"></div>
+            <div class="cart-item-info">
+              <p>Sepatu Lari Sporty</p>
+              <small>Putih / 42</small>
+              <div class="cart-item-price">Rp 450.000</div>
+              <div class="qty-row"><span class="qty-btn">−</span><span class="qty-val">1</span><span class="qty-btn">+</span></div>
+            </div>
+            <i class="ti ti-trash trash-icon" aria-label="Hapus item"></i>
+          </div>
+
+          <div class="cart-item">
+            <div class="cart-item-img" style="background:#1a1a2e;"><img src="https://images.unsplash.com/photo-1541643600914-78b084683702?w=200&h=200&fit=crop" alt="Parfum" onerror="this.parentElement.innerHTML='<i class=\'ti ti-bottle\' style=\'font-size:22px;color:#bbb;\'></i>'"></div>
+            <div class="cart-item-info">
+              <p>Parfum Elegan</p>
+              <small>50ml / Original</small>
+              <div class="cart-item-price">Rp 220.000</div>
+              <div class="qty-row"><span class="qty-btn">−</span><span class="qty-val">1</span><span class="qty-btn">+</span></div>
+            </div>
+            <i class="ti ti-trash trash-icon" aria-label="Hapus item"></i>
+          </div>
+
+          <div class="promo-row">
+            <input class="promo-input" type="text" placeholder="Kode promo / voucher">
+            <button class="btn-pakai">Pakai</button>
+          </div>
+
+          <div class="summary-box">
+            <h3>Ringkasan Pesanan</h3>
+            <div class="summary-row"><span>Subtotal (3 item)</span><span>Rp 1.020.000</span></div>
+            <div class="summary-row"><span>Ongkir</span><span>Rp 15.000</span></div>
+            <div class="summary-row discount"><span>Diskon Promo</span><span>− Rp 50.000</span></div>
+            <hr class="summary-divider">
+            <div class="summary-total"><span>Total</span><span>Rp 985.000</span></div>
+            <button class="btn-checkout">Checkout →</button>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></div>
+          <div class="nav-item"><i class="ti ti-search" aria-hidden="true"></i><span>Cari</span></div>
+          <div class="nav-item active"><i class="ti ti-shopping-cart" aria-hidden="true"></i><span>Cart</span></div>
+          <div class="nav-item"><i class="ti ti-user" aria-hidden="true"></i><span>Profil</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
